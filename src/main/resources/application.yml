@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: pages-management-service
+s3:
+  part:
+    size: 5242880
+  configuration:
+    accessKey: admin
+    secretKey: admin
