@@ -5,5 +5,8 @@ s3:
   part:
     size: 5242880
   configuration:
-    accessKey: admin
-    secretKey: admin
+    accessKey: minio
+    secretKey: minio123
+    location: http://s3:9000
+server:
+  port: 8080

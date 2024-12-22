@@ -5,6 +5,5 @@ import java.util.Map;
 
 public interface PageService {
   void addPage(AddPageRequest request);
-
   Map<Long, String> getPages(String titleId, String chapterNumber, String pageNumber, String pageSize);
 }

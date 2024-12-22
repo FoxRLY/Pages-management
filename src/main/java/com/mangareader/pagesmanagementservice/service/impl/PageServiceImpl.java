@@ -64,7 +64,7 @@ public class PageServiceImpl implements PageService {
     int page = Integer.parseInt(pageNumber);
     int size = Integer.parseInt(pageSize);
     int skip = (page - 1) * size;
-    String bucketName = titleId + "/" + chapterNumber;
+    String bucketName = titleId + "-" + chapterNumber;
 
     Iterable<Result<Item>> listObjects = s3Client.listObjects(
         ListObjectsArgs.builder()
@@ -87,7 +87,7 @@ public class PageServiceImpl implements PageService {
       String objectName = item.objectName();
 
       // Преобразуем имя объекта в номер страницы
-      Long pageNumberKey = Long.parseLong(objectName.substring(objectName.lastIndexOf('/') + 1));
+      Long pageNumberKey = Long.parseLong(objectName.substring(objectName.lastIndexOf('-') + 1));
 
       // Получаем объект в виде InputStream
       try (InputStream inputStream = s3Client.getObject(
@@ -123,15 +123,14 @@ public class PageServiceImpl implements PageService {
   }
 
   private static @NotNull String getBucketName(AddPageRequest request) {
-    return request.getMangaId().toString() + "/" + request.getChapterNumber().toString();
+    return request.getMangaId().toString() + "-" + request.getChapterNumber().toString();
   }
 
   private void makeBucket(AddPageRequest request)
       throws ErrorResponseException, InsufficientDataException, InternalException,
       InvalidKeyException, InvalidResponseException, IOException, NoSuchAlgorithmException,
       ServerException, XmlParserException {
-    s3Client.makeBucket(MakeBucketArgs.builder().bucket(request.getMangaId().toString())
-        .bucket(request.getChapterNumber().toString())
+    s3Client.makeBucket(MakeBucketArgs.builder().bucket(getBucketName(request))
         .build());
   }
 
@@ -139,8 +138,7 @@ public class PageServiceImpl implements PageService {
       throws ErrorResponseException, InsufficientDataException, InternalException,
       InvalidKeyException, InvalidResponseException, IOException, NoSuchAlgorithmException,
       ServerException, XmlParserException {
-    return s3Client.bucketExists(BucketExistsArgs.builder().bucket(request.getMangaId().toString())
-        .bucket(request.getChapterNumber().toString())
+    return s3Client.bucketExists(BucketExistsArgs.builder().bucket(getBucketName(request))
         .build());
   }
 }

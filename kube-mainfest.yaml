@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: page-management
+  labels:
+    service-name: page-management
+spec:
+  selector:
+    service-name: page-management
+  ports:
+    - name: http
+      port: 80
+      tragetPort: 8080
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: page-management
+  labels:
+    service-name: page-management
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      service-name: page-management
+  template:
+    metadata:
+      labels:
+        service-name: page-management
+    spec:
+      containers:
+        - name: page-management
+          imagePullPolicy: Never
+          image: page-management
+          resources:
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 8080
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: page-management
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: 'true'
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /page-management(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: page-management
+                port:
+                  number: 80

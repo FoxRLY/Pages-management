@@ -4,9 +4,11 @@ import com.mangareader.pagesmanagementservice.controller.request.AddPageRequest;
 import com.mangareader.pagesmanagementservice.service.PageService;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,7 +20,7 @@ public class PageController {
   private final PageService pageService;
 
   @PostMapping
-  public ResponseEntity<Void> addPage(AddPageRequest request) {
+  public ResponseEntity<Void> addPage(@RequestBody AddPageRequest request) {
     pageService.addPage(request);
     return ResponseEntity.ok().build();
   }
@@ -29,5 +31,10 @@ public class PageController {
                                                     @RequestParam String pageNumber,
                                                     @RequestParam String pageSize) {
     return ResponseEntity.ok(pageService.getPages(titleId, chapterNumber, pageNumber, pageSize));
+  }
+
+  @GetMapping("/test")
+  String test(@RequestBody AddPageRequest request) {
+    return request.toString();
   }
 }
